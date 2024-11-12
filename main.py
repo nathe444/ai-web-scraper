@@ -1,5 +1,6 @@
 import streamlit as st
-from scraper import scrape_website, extract_body_content, clean_body_content
+from scraper import scrape_website, extract_body_content, clean_body_content, split_dom_content
+from parser import parse_with_groq
 
 
 st.title("AI Web Scraper")
@@ -17,3 +18,15 @@ if st.button("Scrape"):
   with st.expander("Scraped Content"):
     st.text_area('scraped content',cleaned_content , height=300 )
      
+
+if "dom_content" in st.session_state:
+  query = st.text_area("Enter your query:")
+
+  if st.button("Search"):
+    if query:
+      st.write("Searching...")
+      
+      dom_chunks = split_dom_content(st.session_state.dom_content)
+
+      result = parse_with_groq(dom_chunks , query)
+      st.write(result)
